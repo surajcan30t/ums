@@ -10,6 +10,7 @@ const getAllStafs = require("./services/getAllStafs");
 const mailResetLink = require("./services/mailresetlink");
 const resetPassword = require("./services/resetPassword");
 const addUser = require("./services/addUser");
+const serveImage = require("./services/serveImage");
 
 const server = http.createServer(async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", process.env.FRONTEND_URL);
@@ -37,7 +38,9 @@ const server = http.createServer(async (req, res) => {
     return getAllStafs(req, res);
   } else if (req.url === "/api/add-user" && req.method === "POST") {
     return addUser(req, res);
-  } else {
+  } else if (req.url.startsWith("/uploads/") && req.method === "GET") {
+    return serveImage(req, res);
+  }else {
     res.writeHead(404, { "Content-Type": "application/json" });
     res.write(JSON.stringify({ message: "Route not found" }));
     res.end();

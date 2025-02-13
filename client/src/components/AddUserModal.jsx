@@ -30,15 +30,17 @@ function UserAddForm() {
       setMessage("Password cannot be empty");
       return;
     }
-    console.log(value);
+    const formData = new FormData();
+    formData.append("username", value.username);
+    formData.append("dob", value.dob);
+    formData.append("password", value.password);
+    formData.append("profilePicture", value.profilePicture);
+    console.log(formData);
     try {
       setProcessing(true);
       const response = await fetch("http://localhost:8000/api/add-user", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(value),
+        body: formData,
         credentials: "include",
       });
       setProcessing(false);
@@ -47,6 +49,7 @@ function UserAddForm() {
         setMessage(data.error || "User registration failed");
         return;
       } else {
+        window.location.reload();
         return;
       }
     } catch (error) {
@@ -147,7 +150,7 @@ function UserAddForm() {
             onClick={handleSubmit}
             className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
-            {processing ? <Loader className="animate-spin" /> : "Sign Up"}
+            {processing ? <Loader className="animate-spin" /> : "Add User"}
           </button>
         </div>
         {message && <p className="text-red-500 text-center">{message}</p>}

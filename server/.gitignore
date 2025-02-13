@@ -33,6 +33,7 @@ mongodb/
 dump.rdb
 redis_data/
 data/
+uploads/
 
 # Ignore cache files
 .cache/

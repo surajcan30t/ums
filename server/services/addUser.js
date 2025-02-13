@@ -5,12 +5,26 @@ const db = require("../db");
 const Cookies = require("cookies");
 const fs = require("fs");
 const path = require("path");
+const multer = require("multer");
 
 const uploadDir = path.join(__dirname, "..", "uploads");
 
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    const filename = `${Date.now()}${ext}`;
+    cb(null, filename);
+  },
+});
+
+const upload = multer({ storage });
 
 const addUser = async (req, res) => {
   const cookies = new Cookies(req, res);
@@ -27,36 +41,42 @@ const addUser = async (req, res) => {
     return;
   }
 
-  let body = "";
-
-  req.on("data", (chunk) => {
-    body += chunk.toString();
-  });
-  req.on("end", async () => {
-    const { username, password, dob, profilePicture } = JSON.parse(body);
-    console.log("Profile picture:", profilePicture);
-    if (!username || !password || !dob || !profilePicture) {
-      res.writeHead(400, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: "Missing required fields" }));
-      return;
+  upload.single("profilePicture")(req, res, async (err) => {
+    if (err) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ message: "Error uploading file" }));
     }
+
+    // Get form fields from `req.body` (multer automatically parses them)
+    const { username, password, dob } = req.body;
+    const profilePicturePath = req.file ? req.file.filename : null;
+
+    if (!username || !password || !dob) {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ message: "Missing required fields" }));
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    try{
+
+    try {
       const [result] = await db.query(
         "INSERT INTO staff (name, dob, password, profile_picture) VALUES (?, ?, ?, ?)",
-        [username, dob, hashedPassword, profilePicture]
+        [username, dob, hashedPassword, profilePicturePath]
       );
+
       if (result.affectedRows > 0) {
         res.writeHead(201, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "User created successfully" }));
+        return res.end(
+          JSON.stringify({ message: "User created successfully" })
+        );
       } else {
         res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: "User creation failed" }));
+        return res.end(JSON.stringify({ error: "User creation failed" }));
       }
     } catch (error) {
       console.error("Error adding user:", error);
       res.writeHead(500, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: "Internal server error" }));
+      return res.end(JSON.stringify({ message: "Internal server error" }));
     }
   });
 };

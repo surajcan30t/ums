@@ -3,6 +3,8 @@ const Cookies = require("cookies");
 const db = require("../db");
 const jwt = require("jsonwebtoken");
 
+const SERVER_URL = "http://localhost:8000";
+
 const getAllStafs = async (req, res) => {
   console.log("Get all staffs called");
   const cookies = new Cookies(req, res);
@@ -19,7 +21,6 @@ const getAllStafs = async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
     if (decoded.role !== "admin") {
       res.writeHead(403, { "Content-Type": "application/json" });
       res.write(JSON.stringify({ message: "Forbidden" }));
@@ -28,8 +29,16 @@ const getAllStafs = async (req, res) => {
     }
 
     const [staffs] = await db.query("SELECT id, name, DATE_FORMAT(dob, '%Y-%m-%d') AS dob, password, profile_picture FROM staff");
+
+    const staffWithImageUrls = staffs.map((staff) => ({
+      ...staff,
+      profile_picture: staff.profile_picture
+        ? `${SERVER_URL}/uploads/${staff.profile_picture}`
+        : null,
+    }));
+
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.write(JSON.stringify(staffs));
+    res.write(JSON.stringify(staffWithImageUrls));
     res.end();
   } catch (error) {
     res.writeHead(500, { "Content-Type": "application/json" });
