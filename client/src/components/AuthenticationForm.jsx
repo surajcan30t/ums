@@ -1,5 +1,6 @@
 import React from "react";
 import { Loader } from "lucide-react";
+import PropTypes from "prop-types";
 
 function LoginForm() {
   const [value, setValue] = React.useState({
@@ -118,7 +119,12 @@ function LoginForm() {
   );
 }
 
-function SignupForm(setToggleLoginOrSignup) {
+SignupForm.propTypes = {
+  setToggleLoginOrSignup: PropTypes.func.isRequired,
+};
+
+function SignupForm({setToggleLoginOrSignup}) {
+  console.log(typeof setToggleLoginOrSignup);
   const [value, setValue] = React.useState({
     name: "",
     email: "",
