@@ -6,7 +6,6 @@ const uploadDir = path.join(__dirname, "../uploads");
 const serveImage = (req, res) => {
   const filePath = path.join(uploadDir, req.url.replace("/uploads/", ""));
 
-  // Check if file exists
   fs.access(filePath, fs.constants.F_OK, (err) => {
     if (err) {
       res.writeHead(404, { "Content-Type": "application/json" });
@@ -14,9 +13,8 @@ const serveImage = (req, res) => {
       return;
     }
 
-    // Get file extension to determine MIME type
     const ext = path.extname(filePath).toLowerCase();
-    let contentType = "image/jpeg"; // Default MIME type
+    let contentType = "image/jpeg";
 
     if (ext === ".png") contentType = "image/png";
     else if (ext === ".jpg" || ext === ".jpeg") contentType = "image/jpeg";
@@ -24,7 +22,6 @@ const serveImage = (req, res) => {
 
     res.writeHead(200, { "Content-Type": contentType });
 
-    // Stream the image file
     const fileStream = fs.createReadStream(filePath);
     fileStream.pipe(res);
   });

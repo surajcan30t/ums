@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AddUserModal from "../components/AddUserModal";
-import { Ellipsis } from "lucide-react";
+import UpdateUser from "../components/UpdateUser";
+import DeleteUser from "../components/DeleteUser";
 
 const Dashboard = () => {
   const [users, setUsers] = useState([]);
@@ -41,7 +42,7 @@ const Dashboard = () => {
     if (sortOption === "name") {
       return a.name.localeCompare(b.name);
     } else if (sortOption === "dob") {
-      // Ensure proper date format before sorting
+
       return (
         new Date(a.dob.split("/").reverse().join("-")) -
         new Date(b.dob.split("/").reverse().join("-"))
@@ -95,7 +96,12 @@ const Dashboard = () => {
                     className="w-[200px] h-[150px] object-cover rounded-lg shadow-md border border-gray-300"
                   />
                 </td>
-                <td className="px-6 py-4 col-span-1 flex justify-center items-center"><div><Ellipsis /></div></td>
+                <td className="px-6 py-4 col-span-1 flex justify-center items-center">
+                  <div className="flex flex-row items-center gap-4">
+                    <UpdateUser data={user} />
+                    <DeleteUser data={user} />
+                  </div>
+                </td>
               </tr>
             ))}
             {sortedUsers.length === 0 && (

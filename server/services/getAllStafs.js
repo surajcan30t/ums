@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 const SERVER_URL = "http://localhost:8000";
 
 const getAllStafs = async (req, res) => {
-  console.log("Get all staffs called");
   const cookies = new Cookies(req, res);
   const token = cookies.get("token");
   
@@ -17,7 +16,6 @@ const getAllStafs = async (req, res) => {
     console.log("Unauthorized");
     return;
   }
-  console.log(token);
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);

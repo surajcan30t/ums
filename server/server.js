@@ -11,6 +11,8 @@ const mailResetLink = require("./services/mailresetlink");
 const resetPassword = require("./services/resetPassword");
 const addUser = require("./services/addUser");
 const serveImage = require("./services/serveImage");
+const deleteUser = require("./services/deleteUser");
+const updateUser = require("./services/updateUser");
 
 const server = http.createServer(async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", process.env.FRONTEND_URL);
@@ -40,6 +42,12 @@ const server = http.createServer(async (req, res) => {
     return addUser(req, res);
   } else if (req.url.startsWith("/uploads/") && req.method === "GET") {
     return serveImage(req, res);
+  } else if (req.url.startsWith("/api/delete-user/") && req.method === "DELETE") {
+    console.log('delete called')
+    return deleteUser(req, res);
+  } else if (req.url.startsWith("/api/update-user") && req.method === "PUT") {
+    console.log('update called')
+    return updateUser(req, res);
   }else {
     res.writeHead(404, { "Content-Type": "application/json" });
     res.write(JSON.stringify({ message: "Route not found" }));
