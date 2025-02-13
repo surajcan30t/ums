@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import AddUserModal from "../components/AddUserModal";
 
 const Dashboard = () => {
   const [users, setUsers] = useState([]);
@@ -47,6 +48,7 @@ const Dashboard = () => {
 
   return (
     <div className="p-4">
+      <AddUserModal />
       <div className="flex justify-between mb-4">
         <input
           type="text"

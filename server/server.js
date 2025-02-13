@@ -7,6 +7,9 @@ const Cookies = require("cookies");
 const login = require("./services/login");
 const signup = require("./services/signup");
 const getAllStafs = require("./services/getAllStafs");
+const mailResetLink = require("./services/mailresetlink");
+const resetPassword = require("./services/resetPassword");
+const addUser = require("./services/addUser");
 
 const server = http.createServer(async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", process.env.FRONTEND_URL);
@@ -22,14 +25,18 @@ const server = http.createServer(async (req, res) => {
     res.end();
     return;
   }
-
   if (req.url === "/api/register" && req.method === "POST") {
     return signup(req, res);
   } else if (req.url === "/api/login" && req.method === "POST") {
     return login(req, res);
-  } else if (req.url === "/api/allusers" && req.method === "GET"){
-    console.log("Get all users");
+  } else if (req.url === "/api/send-reset-link" && req.method === "POST") {
+    return mailResetLink(req, res);
+  } else if (req.url === "/api/reset-password" && req.method === "POST") {
+    return resetPassword(req, res);
+  } else if (req.url === "/api/allusers" && req.method === "GET") {
     return getAllStafs(req, res);
+  } else if (req.url === "/api/add-user" && req.method === "POST") {
+    return addUser(req, res);
   } else {
     res.writeHead(404, { "Content-Type": "application/json" });
     res.write(JSON.stringify({ message: "Route not found" }));

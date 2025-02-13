@@ -18,7 +18,6 @@ function LoginForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(isValidEmail(value.email));
     if(!isValidEmail(value.email)){
       setMessage("Invalid email address");
       return;
@@ -83,7 +82,7 @@ function LoginForm() {
             </label>
             <div className="text-sm">
               <a
-                href="#"
+                href="/auth/forgotpassword"
                 className="font-semibold text-indigo-600 hover:text-indigo-500"
               >
                 Forgot password?
